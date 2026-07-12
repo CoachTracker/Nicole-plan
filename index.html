@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nicole's Plan</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+:root { color-scheme: light;
+  --bg:#f7f6f3; --card:#ffffff; --ink:#1f2a2e; --muted:#6b7a80; --line:#e4e2dc;
+  --teal:#0e7c7b; --teal-lt:#e3f2f1; --coral:#e2725b; --coral-lt:#fbe9e4; --gold:#f0b429; --green:#3d9970;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+header h1{font-size:22px;font-weight:700}
+header .sub{color:var(--muted);font-size:13px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:5px}
+.tabs button{flex:1;min-width:90px;border:0;background:transparent;padding:9px 10px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer}
+.tabs button.on{background:var(--teal);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.card h2{font-size:16px;margin-bottom:10px}
+.card h3{font-size:14px;margin:10px 0 6px}
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.pill.teal{background:var(--teal-lt);color:var(--teal)} .pill.coral{background:var(--coral-lt);color:var(--coral)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}.grid4{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.stat .v{font-size:22px;font-weight:700;color:var(--teal)} .stat .l{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.meal{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.meal:last-child{border-bottom:0}
+.meal .tag{min-width:78px;font-size:11.5px;font-weight:700;color:var(--coral);text-transform:uppercase}
+ul.ex{list-style:none} ul.ex li{padding:7px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+ul.ex li:last-child{border-bottom:0} ul.ex .r{color:var(--muted);white-space:nowrap;font-size:13.5px}
+.daycard{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:#fff;cursor:pointer}
+.daycard:hover{border-color:var(--teal)}
+.daycard .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.daycard .dn{font-weight:700;font-size:13.5px}
+.daycard .wo{color:var(--teal);font-weight:600;font-size:13px}
+.daycard .dd{color:var(--muted);font-size:12.5px;margin-top:2px}
+.daycard.today{border:2px solid var(--coral);background:var(--coral-lt)}
+.daycard .detail{display:none;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px;font-size:13.5px}
+.daycard.open .detail{display:block}
+.wksel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.wksel button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 11px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.wksel button.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.check{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line)}
+.check:last-child{border-bottom:0}
+.check input{width:19px;height:19px;accent-color:var(--teal)}
+input[type=number],input[type=date],input[type=text],textarea,select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink)}
+button.btn{background:var(--teal);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer}
+button.btn.sec{background:var(--coral)}
+button.mini{background:transparent;border:0;color:var(--coral);cursor:pointer;font-size:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.note{border-left:3px solid var(--gold);background:#fdf8ec;border-radius:0 8px 8px 0;padding:10px 12px;margin-bottom:8px;font-size:13.5px}
+.note .d{font-size:11.5px;color:var(--muted);margin-bottom:2px}
+.gitem{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13.5px}
+.gitem input{width:16px;height:16px;accent-color:var(--teal)}
+.gitem.done span{text-decoration:line-through;color:var(--muted)}
+.gcat{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--coral);margin:12px 0 4px}
+.chartbox{position:relative;height:280px}
+table.wl{width:100%;border-collapse:collapse;font-size:13.5px}
+table.wl td,table.wl th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}
+.muted{color:var(--muted);font-size:13px}
+.banner{background:var(--teal-lt);border:1px solid #c4e0df;border-radius:10px;padding:10px 14px;font-size:13.5px;margin-bottom:14px}
+.phase{background:var(--coral-lt);border-radius:8px;padding:8px 12px;font-size:13px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><h1>🌸 Nicole's 18-Week Plan</h1><div class="sub">160 → 130 lbs · 1,400 cal/day · 130g protein · gluten-free & lactose-free</div></div>
+  <div class="row"><label class="muted">Start:</label><input type="date" id="startDate"></div>
+</header>
+
+<div class="tabs">
+  <button data-t="today" class="on">Today</button>
+  <button data-t="cal">Calendar</button>
+  <button data-t="work">Workouts</button>
+  <button data-t="recipes">Recipes</button>
+  <button data-t="groc">Grocery</button>
+  <button data-t="prog">Progress</button>
+  <button data-t="notes">Notes</button>
+</div>
+
+<div id="tab-today"></div>
+<div id="tab-cal" style="display:none"></div>
+<div id="tab-work" style="display:none"></div>
+<div id="tab-recipes" style="display:none"></div>
+<div id="tab-groc" style="display:none"></div>
+<div id="tab-prog" style="display:none">
+  <div class="grid4" id="progStats"></div>
+  <div class="card" style="margin-top:14px"><h2>Weight Trend</h2><div class="chartbox"><canvas id="wchart"></canvas></div></div>
+  <div class="card"><h2>🩸 Bloodwork Game Plan <span class="muted">(Nov 2025 labs)</span></h2>
+    <p style="margin-bottom:8px"><b>Ferritin 11 ng/mL (low)</b> — iron stores have been low on three straight tests, even though hemoglobin is normal. In a calorie deficit with 5 training days, low iron shows up as heavy legs, a racing heart rate on cardio, and slow recovery. The meal plan leans on beef, dark-meat poultry, and tuna for heme iron, always paired with vitamin C. Keep coffee and tea an hour away from iron-rich meals — they block absorption. <b>Ask her doctor about an iron supplement</b>; at ferritin 11 food alone rebuilds stores slowly.</p>
+    <p style="margin-bottom:8px"><b>Vitamin D 29 ng/mL (just under sufficient)</b> — up from 10 in 2024, so what she's doing is working; a daily D3 (2,000 IU is a common dose — confirm with her doctor) plus outdoor Saturday walks should get her over 30.</p>
+    <p style="margin-bottom:8px"><b>B12 357 pg/mL (low-normal)</b> — fine, but worth watching since it trends with energy. Eggs, beef, and tuna in the plan cover it.</p>
+    <p><b>Everything else looks great:</b> blood sugar (HbA1c 5.1), cholesterol, triglycerides, and inflammation (hsCRP 0.6) are all excellent. <b>Recheck ferritin and vitamin D around week 12</b> to confirm they're climbing. This isn't medical advice — run supplements past her doctor.</p>
+  </div>
+  <div class="card"><h2>Log Weigh-In</h2>
+    <div class="row"><input type="date" id="wDate"><input type="number" id="wVal" placeholder="Weight (lbs)" step="0.1" style="width:130px"><input type="number" id="waistVal" placeholder="Waist (in, optional)" step="0.1" style="width:160px"><button class="btn" onclick="addWeight()">Save</button></div>
+    <p class="muted" style="margin-top:8px">Weigh in 2–3× per week, same time of day (morning, after bathroom, before food). Daily fluctuations of 1–3 lbs are normal water shifts — trust the weekly trend.</p>
+    <div id="wlog" style="margin-top:10px"></div>
+  </div>
+</div>
+<div id="tab-notes" style="display:none">
+  <div class="card"><h2>Notes & Wins</h2>
+    <textarea id="noteText" rows="3" style="width:100%" placeholder="Energy, hunger, PRs, how clothes fit, non-scale victories..."></textarea>
+    <div style="margin-top:8px"><button class="btn" onclick="addNote()">Add Note</button></div>
+  </div>
+  <div id="noteList"></div>
+</div>
+
+<script>
+/* ================= DATA ================= */
+const TOTAL_DAYS = 126, TOTAL_WEEKS = 18, GOAL = 130, STARTW = 160;
+const CAL = 1400, PROT = 130;
+
+const LS = {
+  get(k,d){ try{const v=localStorage.getItem('np_'+k);return v?JSON.parse(v):d}catch(e){return d} },
+  set(k,v){ try{localStorage.setItem('np_'+k,JSON.stringify(v))}catch(e){} }
+};
+
+function fmtLocal(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function parseLocal(s){ const p=s.split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
+
+let startStr = LS.get('start','2026-07-13');
+
+/* --- Workouts (5-day split for experienced lifter) --- */
+const PHASES = [
+ {wk:[1,6], name:'Phase 1 · Base (Weeks 1–6)', tip:'Moderate weights — leave 2 reps in the tank (RPE 7). Log every lift so Phase 2 has numbers to beat.'},
+ {wk:[7,12], name:'Phase 2 · Build (Weeks 7–12)', tip:'Add weight whenever you hit the top of a rep range. Intervals go to 12 rounds.'},
+ {wk:[13,18], name:'Phase 3 · Push (Weeks 13–18)', tip:'Heavier top sets (RPE 8–9), intervals to 14 rounds, add 10 min easy cardio after both lower days.'}
+];
+function phaseFor(week){ return PHASES.find(p=>week>=p.wk[0]&&week<=p.wk[1])||PHASES[2]; }
+
+const WORKOUTS = {
+ lowerA:{name:'Lower Body A — Squat Focus', ex:[
+  ['Back squat','4 × 6–8'],['Romanian deadlift','3 × 8–10'],['Leg press','3 × 12'],
+  ['Lying leg curl','3 × 12'],['Standing calf raise','3 × 15'],['Finisher: incline treadmill walk','10 min']]},
+ upperA:{name:'Upper Body A — Push Focus', ex:[
+  ['Barbell bench press','4 × 6–8'],['Seated cable row','4 × 8–10'],['Dumbbell overhead press','3 × 8–10'],
+  ['Lat pulldown','3 × 10–12'],['Incline dumbbell press','3 × 10'],['Face pulls','3 × 15'],['Plank','3 × 45 sec']]},
+ cond:{name:'Conditioning + Core', ex:[
+  ['Warm-up (bike/row, easy)','5 min'],['Intervals: 30 sec hard / 90 sec easy','10 rounds (bike, rower, or treadmill)'],
+  ['Dead bugs','3 × 10'],['Bird dogs','3 × 10/side'],['Hanging knee raises','3 × 10'],['Side plank','3 × 30 sec/side'],['Cooldown walk','5 min']]},
+ lowerB:{name:'Lower Body B — Hinge Focus', ex:[
+  ['Deadlift','4 × 5'],['Barbell hip thrust','4 × 8–10'],['Dumbbell step-ups','3 × 10/leg'],
+  ['Leg extension','3 × 12'],['Seated calf raise','3 × 15'],['Finisher: stairmaster','10 min']]},
+ upperB:{name:'Upper Body B — Pull Focus + Cardio', ex:[
+  ['Pull-ups (assisted if needed)','4 × max reps'],['Dumbbell shoulder press','3 × 8–10'],['Chest-supported row','3 × 10–12'],
+  ['Lateral raises','3 × 12–15'],['Biceps curl + triceps pushdown superset','3 × 12'],['Steady-state cardio (zone 2)','20 min']]},
+ walk:{name:'Active Recovery', ex:[['Outdoor walk (brisk)','45–60 min'],['Full-body stretch','10 min']]},
+ rest:{name:'Rest + Meal Prep', ex:[['Full rest day','—'],['Batch-cook Sunday dinner + extras for the week','~1 hr']]}
+};
+const SCHED = ['lowerA','upperA','cond','lowerB','upperB','walk','rest']; // slot 0..6 from start date
+
+/* --- Meals: 4-week rotation, GF + DF, ~1,400 cal, ~130g protein --- */
+const B = {
+ b1:'3-egg scramble with spinach & salsa + 1 slice GF toast',
+ b2:'Protein smoothie: protein powder, frozen berries, ½ banana, lactose-free milk',
+ b3:'Vanilla chia protein pudding (made the night before) + berries',
+ b4:'3 egg muffins with turkey sausage & peppers + a piece of fruit'
+};
+const SN = {
+ s1:'Apple + a small handful of mixed nuts', s2:'Protein shake (water or lactose-free milk)',
+ s3:'2 hard-boiled eggs + fruit', s4:'Hummus + carrot/cucumber sticks',
+ s5:'Lactose-free Greek yogurt + berries', s6:'Lactose-free cottage cheese + pineapple'
+};
+const MEALWEEKS = {
+ A:[
+  {b:B.b1,l:'Chicken & rice bowl with roasted veggies',s:SN.s2,d:'Turkey chili (beans, tomatoes) — make a double batch'},
+  {b:B.b2,l:'Leftover turkey chili',s:SN.s1,d:'Coconut-lime chicken curry + jasmine rice'},
+  {b:B.b1,l:'Tuna salad (avocado-oil mayo) + GF crackers + baby carrots',s:SN.s3,d:'Turkey meatballs + GF pasta + marinara + side salad'},
+  {b:B.b2,l:'Leftover meatballs & pasta',s:SN.s4,d:'Chicken fajita bowl: peppers, onions, rice, guacamole'},
+  {b:B.b1,l:'Turkey-avocado lettuce wraps + fruit + 10 almonds',s:SN.s5,d:'Sirloin steak + baked potato + steamed broccoli'},
+  {b:B.b4,l:'Chicken cobb salad: grilled chicken, egg, avocado, vinaigrette',s:SN.s1,d:'Burgers (GF bun or lettuce) + oven fries + salad'},
+  {b:B.b3,l:'Tuna salad lettuce boats + fruit',s:SN.s2,d:'Sheet-pan chicken thighs + potatoes + Brussels sprouts (cook extra chicken for Monday)'}],
+ B:[
+  {b:B.b2,l:'Chicken & rice bowl with roasted veggies',s:SN.s3,d:'Beef taco bowls: lean ground beef, lettuce, salsa, guac, rice'},
+  {b:B.b1,l:'Leftover taco bowl as a big salad',s:SN.s1,d:'Slow-cooker pulled pork + roasted sweet potato + green beans'},
+  {b:B.b3,l:'Pulled pork lettuce wraps + fruit',s:SN.s4,d:'Beef & broccoli stir-fry (GF tamari) + rice'},
+  {b:B.b1,l:'Tuna salad + GF crackers + baby carrots',s:SN.s2,d:'Turkey meatballs + zucchini noodles + marinara'},
+  {b:B.b2,l:'Turkey-avocado lettuce wraps + fruit',s:SN.s5,d:'Slow-cooker honey-garlic chicken + rice + broccoli'},
+  {b:B.b4,l:'Chicken cobb salad: grilled chicken, egg, avocado, vinaigrette',s:SN.s1,d:'Steak night: sirloin + roasted potatoes + big salad'},
+  {b:B.b3,l:'Leftovers plate',s:SN.s2,d:'Turkey chili — double batch for Monday'}],
+ C:[
+  {b:B.b1,l:'Leftover turkey chili',s:SN.s1,d:'Sheet-pan chicken thighs + potatoes + green beans'},
+  {b:B.b2,l:'Chicken & rice bowl with roasted veggies',s:SN.s3,d:'Chicken fajita bowls: peppers, onions, rice, guac'},
+  {b:B.b1,l:'Tuna salad + GF crackers + cucumber',s:SN.s4,d:'Chicken stir-fry with GF tamari + rice'},
+  {b:B.b3,l:'Turkey-avocado lettuce wraps + fruit',s:SN.s2,d:'Burgers (GF bun or lettuce) + oven fries + salad'},
+  {b:B.b2,l:'Leftovers plate',s:SN.s5,d:'Sirloin steak + baked potato + broccoli'},
+  {b:B.b4,l:'Chicken cobb salad: grilled chicken, egg, avocado, vinaigrette',s:SN.s1,d:'Turkey meatballs + GF pasta + marinara'},
+  {b:B.b3,l:'Tuna salad lettuce boats + fruit',s:SN.s2,d:'Slow-cooker beef pot roast with carrots & potatoes (save extra for Monday)'}],
+ D:[
+  {b:B.b2,l:'Leftover pot roast bowl: beef, potatoes, carrots',s:SN.s3,d:'Beef & broccoli stir-fry (GF tamari) + rice'},
+  {b:B.b1,l:'Chicken & rice bowl with roasted veggies',s:SN.s1,d:'Turkey chili (beans, tomatoes)'},
+  {b:B.b3,l:'Leftover turkey chili',s:SN.s4,d:'Slow-cooker white chicken chili (creamy, no dairy)'},
+  {b:B.b1,l:'Turkey-avocado lettuce wraps + fruit',s:SN.s2,d:'Turkey & rice stuffed bell peppers'},
+  {b:B.b2,l:'Leftover stuffed pepper',s:SN.s5,d:'Greek chicken + lemon rice + cucumber-tomato salad'},
+  {b:B.b4,l:'Chicken cobb salad: grilled chicken, egg, avocado, vinaigrette',s:SN.s1,d:'Steak night: sirloin + roasted potatoes + salad'},
+  {b:B.b3,l:'Turkey-avocado lettuce wraps',s:SN.s2,d:'Turkey meatballs + GF pasta (extra for Monday lunch)'}]
+};
+
+/* --- Grocery lists per rotation week --- */
+const STAPLES = ['Protein powder (vanilla — whey isolate or lactose-free)','GF tamari or coconut aminos','Avocado-oil mayo','Olive oil & avocado oil','Chia seeds','Lactose-free milk','Mixed nuts & cashews','GF crackers & rice cakes','Salsa, marinara (no-sugar-added)','Honey','Spices: taco, fajita, chili powder, curry powder, cumin, oregano, garlic, s&p','Jasmine + brown rice','Hummus'];
+const GROCERY = {
+ A:{Protein:['Chicken breast 3 lb','Chicken thighs 1.5 lb','93% ground turkey 2.5 lb','Sirloin steak 12 oz','Lean ground beef 1 lb','Canned tuna ×4','Eggs (18)','Turkey sausage','Deli turkey ½ lb','Lactose-free Greek yogurt ×3'],
+   Produce:['Spinach (big tub)','Romaine + salad mix','Bell peppers ×5','Onions ×3','Broccoli ×2 heads','Brussels sprouts 1 lb','Baby carrots','Cucumbers','Avocados ×4','Bananas','Apples ×5','Oranges ×3','Berries (fresh + frozen)','Potatoes ×5 + baking potatoes','Lemons/limes'],
+   Pantry:['GF pasta','Canned beans ×2 (kidney/black)','Crushed tomatoes ×2','Light coconut milk (can — curry night)','Jasmine rice','GF bread/buns','GF crackers','Guacamole or extra avocados'],
+   Other:['Lactose-free milk','Eggs already listed — double-check count','Frozen stir-fry veggies ×2 bags']},
+ B:{Protein:['Chicken breast 2 lb','Flank or sirloin for stir-fry 1 lb','Pork shoulder 3 lb (slow cooker)','Chicken thighs 1.5 lb (honey-garlic)','93% ground turkey 2 lb','Lean ground beef 1.5 lb','Sirloin steak 12 oz','Canned tuna ×4','Eggs (18)','Turkey sausage','Deli turkey ½ lb','Lactose-free Greek yogurt ×3'],
+   Produce:['Spinach','Romaine + lettuce for wraps','Bell peppers ×4','Onions ×3','Zucchini ×4 (noodles)','Green beans 1 lb','Asparagus 1 bunch','Sweet potatoes ×4','Potatoes ×4','Baby carrots','Cucumbers','Avocados ×4','Bananas','Apples ×5','Oranges ×3','Berries','Broccoli ×2 heads'],
+   Pantry:['Jasmine rice','GF crackers','Marinara','Salsa','Honey','GF breadcrumbs (meatballs)'],
+   Other:['Lactose-free milk','Frozen stir-fry veggies ×2 bags','Frozen berries']},
+ C:{Protein:['Chicken breast 3 lb','Chicken thighs 1.5 lb','93% ground turkey 2.5 lb','Sirloin steak 12 oz','Lean ground beef 1 lb','Chuck roast 3 lb (pot roast)','Canned tuna ×4','Eggs (18)','Turkey sausage','Deli turkey ½ lb','Lactose-free Greek yogurt ×3'],
+   Produce:['Spinach','Romaine + salad mix','Bell peppers ×5','Onions ×3','Broccoli ×2','Green beans 1 lb','Carrots 1 lb (pot roast)','Sweet potatoes ×3','Potatoes ×6','Baby carrots','Cucumbers','Avocados ×4','Bananas','Apples ×5','Oranges ×3','Berries'],
+   Pantry:['GF pasta','GF buns','Jasmine rice','Beef broth (pot roast)','Marinara','Guacamole'],
+   Other:['Lactose-free milk','Frozen stir-fry veggies ×2 bags','Frozen fries or potatoes for oven fries']},
+ D:{Protein:['Chicken breast 3.5 lb (incl. white chili)','Flank or sirloin for stir-fry 1 lb','Chicken thighs 1.5 lb (Greek night)','93% ground turkey 2.5 lb','Lean ground beef 1 lb','Sirloin steak 12 oz','Eggs (18)','Turkey sausage','Deli turkey 1 lb','Lactose-free Greek yogurt ×3'],
+   Produce:['Spinach','Romaine + lettuce for wraps','Bell peppers ×5','Onions ×3','Brussels sprouts 1 lb','Tomatoes ×2 + extra cucumber (Greek salad)','Lemons ×2','Baby carrots','Cucumbers','Avocados ×4','Bananas','Apples ×5','Oranges ×3','Berries','Potatoes ×6','Broccoli ×2 heads'],
+   Pantry:['GF pasta','Canned beans ×2','White beans ×2 + can of green chiles (white chili)','Crushed tomatoes ×2','Jasmine rice','GF breadcrumbs','Salsa'],
+   Other:['Lactose-free milk','Frozen stir-fry veggies ×2 bags','Frozen berries']}
+};
+
+/* ================= HELPERS ================= */
+const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function dayIndex(date){ return Math.round((parseLocal(fmtLocal(date)) - parseLocal(startStr))/86400000); }
+function infoFor(idx){
+  const week = Math.floor(idx/7)+1, slot = ((idx%7)+7)%7;
+  const mw = ['A','B','C','D'][(week-1)%4];
+  return { week, slot, workout:WORKOUTS[SCHED[slot]], meals:MEALWEEKS[mw][slot], mealWeek:mw, phase:phaseFor(week) };
+}
+function dateFor(idx){ const d = parseLocal(startStr); d.setDate(d.getDate()+idx); return d; }
+function fmtNice(d){ return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate(); }
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function exRow(e){
+  const skip=/walk|warm|cool|interval|steady|rest|batch|stretch|finisher|cardio/i.test(e[0]);
+  const link = skip ? '' : ' <a href="https://www.youtube.com/results?search_query='+encodeURIComponent('how to '+e[0].replace(/\(.*?\)/g,'').trim()+' proper form')+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-size:11px;color:var(--teal);text-decoration:none;white-space:nowrap">▶ how-to</a>';
+  return '<li><span>'+e[0]+link+'</span><span class="r">'+e[1]+'</span></li>';
+}
+
+/* ================= TODAY TAB ================= */
+function renderToday(){
+  const el = document.getElementById('tab-today');
+  const now = new Date(); const idx = dayIndex(now);
+  if(idx < 0){ el.innerHTML = '<div class="banner">Plan starts <b>'+fmtNice(parseLocal(startStr))+'</b> — '+(-idx)+' day(s) to go. Use this week to shop (Grocery tab, Week A) and do Sunday meal prep. 💪</div>'; return; }
+  if(idx >= TOTAL_DAYS){ el.innerHTML = '<div class="banner">🎉 The 18 weeks are complete! Log a final weigh-in on the Progress tab. Ask Claude to build the next phase.</div>'; return; }
+  const inf = infoFor(idx);
+  const done = LS.get('done_'+fmtLocal(now), {});
+  const habits = [['workout','Completed the workout'],['protein','Hit ~130g protein'],['water','Drank 80+ oz water'],['steps','Hit 8,000+ steps']];
+  el.innerHTML =
+   '<div class="banner"><b>Day '+(idx+1)+' of '+TOTAL_DAYS+'</b> · Week '+inf.week+' of '+TOTAL_WEEKS+' · '+fmtNice(now)+' · Meal Week '+inf.mealWeek+'</div>'+
+   '<div class="phase"><b>'+inf.phase.name+'</b> — '+inf.phase.tip+'</div>'+
+   '<div class="note" style="margin-bottom:12px"><div class="d">🩸 Bloodwork note</div>Iron stores (ferritin) and vitamin D run low. Eat the red-meat meals as written, pair iron foods with vitamin C (peppers, citrus, berries), and keep coffee/tea at least an hour away from iron-rich meals. Full details on the Progress tab.</div>'+
+   '<div class="grid2">'+
+   '<div class="card"><h2>🏋️ '+inf.workout.name+'</h2><ul class="ex">'+
+     inf.workout.ex.map(exRow).join('')+'</ul></div>'+
+   '<div class="card"><h2>🍽️ Meals <span class="pill teal">~1,400 cal</span> <span class="pill coral">130g protein</span></h2>'+
+     '<div class="meal"><span class="tag">Breakfast</span><span>'+inf.meals.b+'</span></div>'+
+     '<div class="meal"><span class="tag">Lunch</span><span>'+inf.meals.l+'</span></div>'+
+     '<div class="meal"><span class="tag">Snack</span><span>'+inf.meals.s+'</span></div>'+
+     '<div class="meal"><span class="tag">Dinner</span><span>'+inf.meals.d+'</span></div></div></div>'+
+   '<div class="card"><h2>✅ Daily Checklist</h2>'+
+     habits.map(h=>'<label class="check"><input type="checkbox" data-h="'+h[0]+'" '+(done[h[0]]?'checked':'')+' onchange="toggleHabit(this)"><span>'+h[1]+'</span></label>').join('')+
+   '</div>';
+}
+function toggleHabit(cb){
+  const k = 'done_'+fmtLocal(new Date());
+  const d = LS.get(k,{}); d[cb.dataset.h]=cb.checked; LS.set(k,d);
+}
+
+/* ================= CALENDAR TAB ================= */
+let calWeek = null;
+function renderCal(){
+  const el = document.getElementById('tab-cal');
+  const todayIdx = dayIndex(new Date());
+  if(calWeek===null) calWeek = Math.min(Math.max(Math.floor(todayIdx/7)+1,1),TOTAL_WEEKS);
+  let btns='<div class="wksel">';
+  for(let w=1;w<=TOTAL_WEEKS;w++) btns+='<button class="'+(w===calWeek?'on':'')+'" onclick="calWeek='+w+';renderCal()">Wk '+w+'</button>';
+  btns+='</div>';
+  const inf0 = infoFor((calWeek-1)*7);
+  let cards='<div class="phase"><b>'+inf0.phase.name+'</b> · Meal Week '+inf0.mealWeek+' — '+inf0.phase.tip+'</div>';
+  for(let s=0;s<7;s++){
+    const idx=(calWeek-1)*7+s, d=dateFor(idx), inf=infoFor(idx);
+    cards+='<div class="daycard'+(idx===todayIdx?' today':'')+'" onclick="this.classList.toggle(\'open\')">'+
+      '<div class="top"><span class="dn">'+fmtNice(d)+'</span><span class="wo">'+inf.workout.name+'</span></div>'+
+      '<div class="dd">🍽️ Dinner: '+inf.meals.d+'</div>'+
+      '<div class="detail"><b>Workout</b><ul class="ex">'+inf.workout.ex.map(exRow).join('')+'</ul>'+
+      '<b style="display:block;margin-top:8px">Meals</b>'+
+      '<div class="meal"><span class="tag">Breakfast</span><span>'+inf.meals.b+'</span></div>'+
+      '<div class="meal"><span class="tag">Lunch</span><span>'+inf.meals.l+'</span></div>'+
+      '<div class="meal"><span class="tag">Snack</span><span>'+inf.meals.s+'</span></div>'+
+      '<div class="meal"><span class="tag">Dinner</span><span>'+inf.meals.d+'</span></div></div></div>';
+  }
+  el.innerHTML = btns+cards;
+}
+
+/* ================= WORKOUTS TAB ================= */
+function renderWork(){
+  const el = document.getElementById('tab-work');
+  let h = PHASES.map(p=>'<div class="phase"><b>'+p.name+'</b> — '+p.tip+'</div>').join('');
+  h += '<div class="grid2">';
+  ['lowerA','upperA','cond','lowerB','upperB','walk','rest'].forEach((k,i)=>{
+    const w=WORKOUTS[k];
+    h+='<div class="card"><h2>Day '+(i+1)+' · '+w.name+'</h2><ul class="ex">'+w.ex.map(exRow).join('')+'</ul></div>';
+  });
+  h+='</div><div class="card"><h2>Ground Rules</h2><p class="muted">Warm up 5 min + 2 light ramp-up sets on the first lift. Rest 2–3 min on big lifts, 60–90 sec elsewhere. If a lift hurts (not burns), swap it — dumbbell or machine version is fine. Progress is adding weight OR reps week to week. Sleep 7+ hours; that\'s where the results get made.</p><p class="muted" style="margin-top:8px"><b>Iron note:</b> her ferritin is low, which can make interval days feel much harder than they should. If heart rate soars or she\'s unusually gassed on conditioning day, cut intervals to 8 rounds, finish the core work, and jot it in Notes — that\'s data, not failure.</p></div>';
+  el.innerHTML = h;
+}
+
+/* ================= RECIPES TAB ================= */
+const RECIPES = [
+ {cat:'Breakfasts',name:'Veggie Egg Scramble',m:'~300 cal · 22g protein',ing:['3 eggs','Big handful of spinach','2 tbsp salsa','1 slice GF bread','Olive oil spray'],steps:['Toast the bread.','Wilt spinach in a sprayed nonstick pan, ~1 min.','Pour in whisked eggs, scramble 2–3 min.','Top with salsa, serve with toast.']},
+ {cat:'Breakfasts',name:'Berry Protein Smoothie',m:'~290 cal · 31g protein',ing:['1 scoop protein powder','¾ cup frozen berries','½ banana','1 cup lactose-free milk','Handful of ice'],steps:['Blend everything 45–60 sec until smooth.']},
+ {cat:'Breakfasts',name:'Vanilla Chia Protein Pudding',m:'~300 cal · 28g protein',ing:['3 tbsp chia seeds','1 scoop vanilla protein powder','1 cup lactose-free milk','½ cup berries'],steps:['Whisk chia, protein, and milk in a jar; whisk again after 10 min so it doesn\'t clump.','Refrigerate overnight.','Top with berries in the morning.']},
+ {cat:'Breakfasts',name:'Turkey Sausage Egg Muffins (makes 12)',m:'~300 cal · 26g protein per 3',ing:['8 eggs','6 oz turkey sausage, browned','1 bell pepper, diced','¼ onion, diced','Salt & pepper'],steps:['Oven to 350°F; grease a muffin tin.','Whisk eggs; stir in sausage and veggies.','Fill cups ¾ full; bake 18–20 min.','Fridge up to 4 days — grab 3 per morning.']},
+ {cat:'Lunches',name:'Chicken & Rice Power Bowl',m:'~400 cal · 35g protein',ing:['4 oz cooked chicken (Sunday batch)','¾ cup cooked rice','1 cup roasted veggies','1 tsp olive oil, squeeze of lime'],steps:['Layer rice, chicken, veggies in a bowl.','Drizzle oil + lime; microwave 90 sec if from fridge.']},
+ {cat:'Lunches',name:'Classic Tuna Salad',m:'~380 cal · 32g protein',ing:['1 can tuna, drained','1½ tbsp avocado-oil mayo','1 celery stalk, diced','1 tsp mustard','GF crackers + baby carrots (or romaine boats)'],steps:['Mix tuna, mayo, celery, mustard.','Scoop with crackers or into lettuce boats.']},
+ {cat:'Lunches',name:'Turkey-Avocado Lettuce Wraps',m:'~370 cal · 28g protein',ing:['4 oz deli turkey','⅓ avocado, sliced','4 large romaine leaves','Mustard','1 piece of fruit + 10 almonds on the side'],steps:['Lay turkey and avocado in leaves, add mustard, roll up.']},
+ {cat:'Lunches',name:'Chicken Cobb Salad',m:'~400 cal · 36g protein',ing:['4 oz grilled chicken','1 hard-boiled egg','⅓ avocado','Big pile of romaine + tomato + cucumber','1 tbsp olive oil + red wine vinegar'],steps:['Chop, toss, done.']},
+ {cat:'Dinners',name:'Turkey Chili (batch — 6 servings)',m:'~450 cal · 38g protein',ing:['2 lb 93% ground turkey','2 cans beans, rinsed','2 cans crushed tomatoes','1 onion + 1 bell pepper, diced','2 tbsp chili powder, 1 tsp cumin, salt'],steps:['Brown turkey with onion and pepper.','Add everything else; simmer 25 min.','Freezes great — save portions for later weeks.']},
+ {cat:'Dinners',name:'Chicken Stir-Fry',m:'~480 cal · 40g protein',ing:['5 oz chicken breast, sliced','2 cups frozen stir-fry veggies','2 tbsp GF tamari','1 clove garlic + ginger','1 tsp sesame or avocado oil','¾ cup cooked rice'],steps:['Sear chicken in hot oil 3–4 min.','Add veggies, garlic, ginger; stir-fry 4 min.','Add tamari, toss 1 min, serve over rice.']},
+ {cat:'Dinners',name:'Beef & Broccoli Stir-Fry',m:'~500 cal · 38g protein',ing:['5 oz flank or sirloin, sliced thin','2 cups broccoli florets','2 tbsp GF tamari','1 clove garlic','1 tsp oil','¾ cup cooked rice'],steps:['Sear beef in a very hot pan 2 min; remove.','Stir-fry broccoli 3–4 min with a splash of water.','Return beef, add tamari + garlic, toss 1 min, serve over rice.']},
+ {cat:'Dinners',name:'Turkey Meatballs (batch — 4 servings)',m:'~480 cal · 40g protein',ing:['1 lb 93% ground turkey','¼ cup GF breadcrumbs','1 egg','1 clove garlic, Italian herbs','Marinara + GF pasta (2 oz dry pp) or zucchini noodles'],steps:['Oven to 400°F. Mix, roll into 16 balls.','Bake 18 min.','Simmer in marinara 5 min; serve over pasta or zoodles.']},
+ {cat:'Dinners',name:'Chicken Fajita Bowl',m:'~470 cal · 38g protein',ing:['5 oz chicken, sliced','1 bell pepper + ½ onion, sliced','Fajita seasoning','¾ cup rice','2 tbsp guacamole, salsa'],steps:['Sear chicken with seasoning 4–5 min.','Add peppers/onion, cook 4 min.','Build bowl: rice, chicken, veg, guac, salsa.']},
+ {cat:'Dinners',name:'Steak Night',m:'~500 cal · 40g protein',ing:['6 oz sirloin','1 medium baking potato','2 cups broccoli','1 tsp olive oil, salt & pepper'],steps:['Microwave potato 8 min (or bake).','Sear steak 3–4 min/side for medium; rest 5 min.','Steam broccoli; season everything.']},
+ {cat:'Dinners',name:'Burger Night',m:'~500 cal · 35g protein',ing:['5 oz lean ground beef patty','GF bun or lettuce wrap','1 potato, cut into fries','Tomato, onion, mustard','1 tsp oil'],steps:['Toss fries in oil; bake 425°F ~25 min, flip once.','Grill or pan-sear patty 3–4 min/side.','Build it and enjoy.']},
+ {cat:'Dinners',name:'Sheet-Pan Chicken Thighs',m:'~480 cal · 38g protein',ing:['2 boneless chicken thighs (~6 oz)','1½ cups baby potatoes, halved','2 cups Brussels sprouts or green beans','1 tbsp olive oil, garlic powder, paprika'],steps:['Oven to 425°F.','Toss everything with oil and spices on one pan.','Roast 30–35 min. One pan, done.']},
+ {cat:'Dinners',name:'Beef Taco Bowls',m:'~470 cal · 35g protein',ing:['5 oz lean ground beef','Taco seasoning','Shredded lettuce','¾ cup rice','Salsa + 2 tbsp guacamole'],steps:['Brown beef, add seasoning + splash of water.','Build bowl over rice and lettuce; top with salsa and guac.']},
+ {cat:'Dinners',name:'Slow-Cooker Pulled Pork (batch — 8 servings)',m:'~450 cal · 38g protein',ing:['3 lb pork shoulder','2 tbsp spice rub (paprika, garlic, brown sugar, salt)','½ cup broth','Sweet potato + green beans (or slaw) to serve'],steps:['Rub pork; slow-cook on low 8 hrs with broth.','Shred with two forks.','Serve 5 oz portions; fridge/freeze the rest for lunches.']},
+ {cat:'Dinners',name:'Coconut-Lime Chicken Curry',m:'~500 cal · 38g protein',ing:['5 oz chicken breast, cubed','½ cup light coconut milk','1 tbsp curry powder, garlic + ginger','1 cup peppers/onions (or frozen veg)','Juice of ½ lime','¾ cup jasmine rice'],steps:['Sear chicken 3–4 min; add curry powder and stir 30 sec.','Add veggies and coconut milk; simmer 8 min.','Finish with lime, serve over rice.']},
+ {cat:'Dinners',name:'Turkey & Rice Stuffed Bell Peppers (makes 4)',m:'~460 cal · 35g protein',ing:['4 bell peppers, tops off, seeded','1 lb 93% ground turkey','1 cup cooked rice','1 cup marinara + Italian herbs'],steps:['Brown turkey; stir in rice and marinara.','Stuff peppers, place in a baking dish with a splash of water.','Bake 375°F for 30 min. Leftover = tomorrow\'s lunch.']},
+ {cat:'Dinners',name:'Greek Chicken + Lemon Rice',m:'~470 cal · 38g protein',ing:['5 oz chicken thighs or breast','1 tsp oregano + juice of ½ lemon + 1 tsp olive oil (marinade)','¾ cup rice with a squeeze of lemon','Cucumber + tomato + red onion salad with olive oil'],steps:['Marinate chicken 15 min (or overnight).','Grill or pan-sear 4–5 min per side.','Serve over lemon rice with the chopped salad.']},
+ {cat:'Slow-Cooker Favorites',name:'Honey-Garlic Chicken (makes 4)',m:'~470 cal · 38g protein',ing:['1.5 lb chicken thighs','¼ cup honey','¼ cup GF tamari','4 garlic cloves, minced','Rice + steamed broccoli to serve'],steps:['Whisk honey, tamari, garlic; pour over chicken in the slow cooker.','Low 4–5 hrs.','Serve over rice with broccoli, spoon sauce on top.']},
+ {cat:'Slow-Cooker Favorites',name:'White Chicken Chili (makes 6)',m:'~440 cal · 38g protein',ing:['1.5 lb chicken breast','2 cans white beans, rinsed','1 can green chiles','1 onion, 2 cups chicken broth','1 tbsp cumin + garlic powder'],steps:['Everything in the slow cooker; low 6 hrs.','Shred chicken; blend 1 cup of the beans/broth and stir back in — creamy with zero dairy.']},
+ {cat:'Slow-Cooker Favorites',name:'Beef Pot Roast (makes 6)',m:'~480 cal · 40g protein',ing:['3 lb chuck roast','1 lb baby potatoes','1 lb carrots, chunked','1 onion + 1 cup beef broth','Salt, pepper, thyme'],steps:['Veggies on the bottom, seasoned roast on top, pour in broth.','Low 8–9 hrs until it falls apart.','Leftovers = Monday\'s lunch bowl.']},
+ {cat:'Slow-Cooker Favorites',name:'Salsa Chicken (bonus — swap for any chicken dinner)',m:'~420 cal · 38g protein',ing:['1.5 lb chicken breasts','1 jar salsa','1 tbsp taco seasoning'],steps:['Everything in the slow cooker; low 6 hrs.','Shred. Use in bowls, lettuce tacos, or over salad all week.']},
+ {cat:'Snacks',name:'Snack Options (pick the one on today\'s plan)',m:'~150–200 cal each',ing:['Apple + a small handful of mixed nuts','Protein shake (water or lactose-free milk)','2 hard-boiled eggs + fruit','Hummus + carrot/cucumber sticks','Lactose-free Greek yogurt + berries','Lactose-free cottage cheese + pineapple'],steps:['Pre-portion on Sunday so they\'re grab-and-go.']}
+];
+function renderRecipes(){
+  const el=document.getElementById('tab-recipes');
+  const cats=[]; RECIPES.forEach(r=>{ if(!cats.includes(r.cat)) cats.push(r.cat); });
+  let h='<div class="banner">Tap any recipe to expand. Everything is gluten-free and lactose-free; macros are per serving. Batch recipes note how many servings you get.</div>';
+  cats.forEach(c=>{
+    h+='<div class="gcat">'+c+'</div>';
+    RECIPES.filter(r=>r.cat===c).forEach(r=>{
+      h+='<div class="daycard" onclick="this.classList.toggle(\'open\')">'+
+        '<div class="top"><span class="dn">'+r.name+'</span><span class="wo">'+r.m+'</span></div>'+
+        '<div class="detail"><b>Ingredients</b><ul style="margin:4px 0 8px 18px">'+r.ing.map(i=>'<li>'+i+'</li>').join('')+'</ul>'+
+        '<b>Steps</b><ol style="margin:4px 0 0 18px">'+r.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol></div></div>';
+    });
+  });
+  el.innerHTML=h;
+}
+
+/* ================= GROCERY TAB ================= */
+let grocWeek = null;
+function renderGroc(){
+  const el = document.getElementById('tab-groc');
+  const todayIdx = dayIndex(new Date());
+  if(grocWeek===null) grocWeek = Math.min(Math.max(Math.floor(todayIdx/7)+1,1),TOTAL_WEEKS);
+  const mw = ['A','B','C','D'][(grocWeek-1)%4];
+  let btns='<div class="wksel">';
+  for(let w=1;w<=TOTAL_WEEKS;w++) btns+='<button class="'+(w===grocWeek?'on':'')+'" onclick="grocWeek='+w+';renderGroc()">Wk '+w+'</button>';
+  btns+='</div>';
+  const checked = LS.get('groc_'+grocWeek, {});
+  let list='<div class="card"><h2>🛒 Week '+grocWeek+' Shopping List <span class="pill teal">Meal Week '+mw+'</span></h2>';
+  for(const cat in GROCERY[mw]){
+    list+='<div class="gcat">'+cat+'</div>';
+    GROCERY[mw][cat].forEach((item,i)=>{
+      const key=cat+'_'+i, on=!!checked[key];
+      list+='<label class="gitem'+(on?' done':'')+'"><input type="checkbox" '+(on?'checked':'')+' onchange="toggleGroc('+grocWeek+',\''+key+'\',this)"><span>'+item+'</span></label>';
+    });
+  }
+  list+='</div><div class="card"><h2>Pantry Staples <span class="muted">(buy once, restock as needed)</span></h2>'+STAPLES.map(s=>'<div class="gitem">• '+s+'</div>').join('')+'</div>';
+  el.innerHTML = btns+list;
+}
+function toggleGroc(w,key,cb){
+  const k='groc_'+w; const d=LS.get(k,{}); d[key]=cb.checked; LS.set(k,d);
+  cb.parentElement.classList.toggle('done',cb.checked);
+}
+
+/* ================= PROGRESS TAB ================= */
+let chart=null;
+function weights(){ return LS.get('weights',[]).slice().sort((a,b)=>a.date<b.date?-1:1); }
+function addWeight(){
+  const d=document.getElementById('wDate').value, v=parseFloat(document.getElementById('wVal').value);
+  const waist=parseFloat(document.getElementById('waistVal').value);
+  if(!d||!v){ alert('Enter a date and weight'); return; }
+  const arr=LS.get('weights',[]).filter(x=>x.date!==d);
+  arr.push({date:d,w:v,waist:isNaN(waist)?null:waist}); LS.set('weights',arr);
+  document.getElementById('wVal').value=''; document.getElementById('waistVal').value='';
+  renderProg();
+}
+function delWeight(d){ LS.set('weights',LS.get('weights',[]).filter(x=>x.date!==d)); renderProg(); }
+function renderProg(){
+  const ws=weights();
+  const cur = ws.length? ws[ws.length-1].w : STARTW;
+  const lost = (STARTW-cur);
+  let weekly='—';
+  if(ws.length>=2){
+    const first=ws[0], last=ws[ws.length-1];
+    const days=(parseLocal(last.date)-parseLocal(first.date))/86400000;
+    if(days>=7) weekly=((first.w-last.w)/(days/7)).toFixed(1)+' lb/wk';
+  }
+  document.getElementById('progStats').innerHTML =
+    '<div class="stat"><div class="v">'+cur.toFixed(1)+'</div><div class="l">Current lbs</div></div>'+
+    '<div class="stat"><div class="v">'+lost.toFixed(1)+'</div><div class="l">Lost</div></div>'+
+    '<div class="stat"><div class="v">'+(cur-GOAL).toFixed(1)+'</div><div class="l">To goal (130)</div></div>'+
+    '<div class="stat"><div class="v">'+weekly+'</div><div class="l">Weekly pace</div></div>';
+  // chart
+  const labels=[], target=[];
+  for(let wk=0;wk<=TOTAL_WEEKS;wk++){
+    labels.push('Wk '+wk);
+    target.push(Math.max(GOAL, STARTW - (30/TOTAL_WEEKS)*wk));
+  }
+  const actualPts = ws.map(x=>({x:(parseLocal(x.date)-parseLocal(startStr))/86400000/7, y:x.w}));
+  const ctx=document.getElementById('wchart');
+  if(chart) chart.destroy();
+  chart=new Chart(ctx,{type:'line',data:{labels,datasets:[
+    {label:'Target pace (~1.7 lb/wk)',data:target,borderColor:'#c9c5bb',borderDash:[6,4],pointRadius:0,tension:0},
+    {label:'Nicole',data:actualPts,parsing:false,borderColor:'#0e7c7b',backgroundColor:'#0e7c7b',pointRadius:4,tension:.25},
+    {label:'Goal 130',data:labels.map(()=>GOAL),borderColor:'#e2725b',borderDash:[2,3],pointRadius:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    scales:{x:{type:'linear',min:0,max:TOTAL_WEEKS,ticks:{callback:v=>'Wk '+v}},y:{min:125,max:165}},
+    plugins:{legend:{labels:{boxWidth:14}}}}});
+  // log table
+  const rows=ws.slice().reverse().map(x=>'<tr><td>'+x.date+'</td><td>'+x.w.toFixed(1)+' lb</td><td>'+(x.waist?x.waist+'"':'—')+'</td><td><button class="mini" onclick="delWeight(\''+x.date+'\')">remove</button></td></tr>').join('');
+  document.getElementById('wlog').innerHTML = ws.length? '<table class="wl"><tr><th>Date</th><th>Weight</th><th>Waist</th><th></th></tr>'+rows+'</table>':'<p class="muted">No weigh-ins yet. Log the starting weight to kick things off!</p>';
+}
+
+/* ================= NOTES TAB ================= */
+function addNote(){
+  const t=document.getElementById('noteText').value.trim();
+  if(!t) return;
+  const arr=LS.get('notes',[]); arr.unshift({date:fmtLocal(new Date()),text:t}); LS.set('notes',arr);
+  document.getElementById('noteText').value=''; renderNotes();
+}
+function delNote(i){ const arr=LS.get('notes',[]); arr.splice(i,1); LS.set('notes',arr); renderNotes(); }
+function renderNotes(){
+  const arr=LS.get('notes',[]);
+  document.getElementById('noteList').innerHTML = arr.length?
+    arr.map((n,i)=>'<div class="note"><div class="d">'+n.date+' <button class="mini" onclick="delNote('+i+')">delete</button></div>'+esc(n.text)+'</div>').join('')
+    : '<p class="muted" style="padding:0 4px">Notes show up here — energy levels, gym PRs, how clothes fit, cravings, wins.</p>';
+}
+
+/* ================= TABS & INIT ================= */
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  ['today','cal','work','recipes','groc','prog','notes'].forEach(t=>document.getElementById('tab-'+t).style.display = t===b.dataset.t?'':'none');
+  if(b.dataset.t==='prog') renderProg();
+}));
+const sd=document.getElementById('startDate'); sd.value=startStr;
+sd.addEventListener('change',()=>{ startStr=sd.value; LS.set('start',startStr); calWeek=null; grocWeek=null; renderToday(); renderCal(); renderGroc(); });
+document.getElementById('wDate').value = fmtLocal(new Date());
+renderToday(); renderCal(); renderWork(); renderRecipes(); renderGroc(); renderNotes();
+</script>
+</div>
+</body>
+</html>
